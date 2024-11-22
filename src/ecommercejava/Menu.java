@@ -1,119 +1,138 @@
 package ecommercejava;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
-class Produto {
-    String nome;
-    double preco;
-    int quantidade;
+import ecommercejava.model.Produto;
+import ecommercejava.model.Calça;
+import ecommercejava.model.Camiseta;
+import ecommercejava.model.Tenis;
+import ecommercejava.model.Usuario;
+import ecommercejava.controller.ProdutoController;
 
-    // Informações sobre produto
-    public Produto(String nome, double preco, int quantidade) {
-        this.nome = nome;
-        this.preco = preco;
-        this.quantidade = quantidade;
-    }
-}
-
-class Usuario {
-    String nome;
-    String email;
-
-    // Criar conta
-    public Usuario(String nome, String email) {
-        this.nome = nome;
-        this.email = email;
-    }
-}
-
-class Carrinho {
-    List<Produto> produtos = new ArrayList<>();
-
-    public void adicionarProduto(Produto produto) {
-        produtos.add(produto);
-    }
-
-    public double calcularTotal() {
-        double total = 0;
-        for (Produto produto : produtos) {
-            total += produto.preco * produto.quantidade;
-        }
-        return total;
-    }
-}
 
 public class Menu {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
 
-        List<Produto> produtosDisponiveis = new ArrayList<>();
-        Carrinho carrinho = new Carrinho();
-        Usuario usuario = null;
-  
-        while (true) {
-        	System.out.println("\n -------------------------- ");
-        	System.out.println("|1.      Criar conta        |");
-        	System.out.println("|2.     Listar produtos     |");
-            System.out.println("|3.   Adicionar ao carrinho |");
-            System.out.println("|4.    Finalizar compra     |");
-            System.out.println("|0.          Sair           |");
-            System.out.println(" --------------------------- ");
-
-        // Cadastro de produtos
+	public static void main(String[] args) {
+		
+		ProdutoController produtos = new ProdutoController();
+		
+		Carrinho carrinho = new Carrinho();
+		
+		Scanner scanner = new Scanner(System.in);
+		int opcao, codigo, tipo;
+        double preco;
+		
+        Calça calça = new Calça(59.90d, 1, 2);
+		produtos.cadastrar(calça);
         
-        produtosDisponiveis.add(new Produto("Camiseta", 29.99, 10));
-        produtosDisponiveis.add(new Produto("Calça", 59.99, 5));
-        produtosDisponiveis.add(new Produto("Tênis", 99.99, 4));
+        Camiseta camiseta = new Camiseta(29.90d, 2, 1);
+        produtos.cadastrar(camiseta);
+        
+        Tenis tenis = new Tenis(79.90d, 3, 3);
+        produtos.cadastrar(tenis);
+		
+		while (true) {
 
-        boolean sair = false;
-        while (!sair) {
+			while (true) {
+	        	System.out.println("\n -------------------------- ");
+	        	System.out.println("|1.      Criar Conta        |");
+	        	System.out.println("|2.     Listar produtos     |");
+	            System.out.println("|3.   Adicionar ao carrinho |");
+	            System.out.println("|4.    Finalizar compra     |");
+	            System.out.println("|0.          Sair           |");
+	            System.out.println(" --------------------------- ");
 
-            int opcao = scanner.nextInt();
+			try {
+				opcao = scanner.nextInt();
+			} catch (InputMismatchException e) {
+				System.out.println("\nDigite valores inteiros!");
+				scanner.nextLine();
+				opcao = 0;
+			}
 
-            switch (opcao) {
-                case 1:
-                	 // Criar conta
-                    System.out.println("Digite seu nome:");
+				if (opcao == 9) {
+					System.out.println("\nMoara's Jeans e Calçados, Seu esquadrão da Moda!");
+					sobre();
+					scanner.close();
+					System.exit(0);
+			}
+				
+				
+				switch (opcao) {
+				case 1:
+					System.out.println("Digite seu nome:");
                     String nome = scanner.next();
                     System.out.println("Digite seu email:");
                     String email = scanner.next();
 
-                    usuario = new Usuario(nome, email);
-                    System.out.println("\nConta criada com sucesso!");
+                System.out.println("\nConta criada com sucesso!");
                     break;
-                
-                case 2:
-                	// Listar produtos
-                    for (Produto produto : produtosDisponiveis) {
-                        System.out.println(produto.nome + " - R$" + produto.preco);
-                    }
-                    break;
-                    
-                case 3:
-                	 System.out.println("Digite o código do produto:");
-                	 scanner.nextLine();
-                     String nomeProduto = scanner.nextLine();
 
-                     System.out.println("\nItem " + nomeProduto + " adicionado ao carrinho!");
-                     
-                     break;
-                
-                case 4:
-                	System.out.println("O total da sua compra ficou no valor de: R$" + carrinho.calcularTotal());
-                   
+				case 2:
+					System.out.println("\nLista dos produtos");
+	                   produtos.listarTodos();
+	                   break;
+				
+				case 3:
+					
+					System.out.println("Adicionar um item ao carrinho");
+					System.out.print("Item: ");
+					codigo = scanner.nextInt();
+					carrinho.adicionarProduto(produtos.procurarProduto(codigo));
+					pressKey();
+                    
+					System.out.println("\nItem adicionado ao carrinho!");
+                    
+                    break;
+					
+				case 4:
+					
+					System.out.println("\nO total da sua compra ficou no valor de: R$" + carrinho.calcularTotal());
+					
+					break;
+					
+				case 0:
+					
+					System.out.println("\nCompra finalizada! Obrigada e volte sempre!");
+                    System.exit(0);
                     break;
                     
-                case 0:
-                    System.out.println("Obrigado e volte sempre!");
-                    sair = true;
-                    break;
-                default:
+				default:
                     System.out.println("Opção inválida.");
-            }
-        }
-        scanner.close();
-    }
-}
-}
+                    
+				}
+				
+			}
+			
+			   }
+
+		}
+		
+			   private static void pressKey() {
+		
+	}
+
+			public static void sobre() {
+				System.out.println("\n--------------------------------------------------");
+				System.out.println("Projeto Desenvolvido por: Rayane Moara da Silva");
+				System.out.println("Contato - moararayane@gmail.com");
+				System.out.println("GitHub - https://github.com/rayanemoara");
+				System.out.println("----------------------------------------------------");
+
+			   }
+
+				public static void keyPress() {
+
+					try {
+
+						System.out.println("\n\nPressione Enter para Continuar...");
+						System.in.read();
+
+					} catch (IOException e) {
+
+						System.out.println("Você pressionou uma tecla diferente de enter!");
+					}
+				}
+			}
